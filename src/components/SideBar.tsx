@@ -1,14 +1,23 @@
-import { useNavigate } from "react-router-dom";
-import { Budgets, Overview, Pots, RecurringBills } from "./ui/icons";
-import { Transactions } from "./ui/icons";
+import { NavLink } from "react-router-dom";
+import {
+  Budgets,
+  Logo,
+  MinimizeMenu,
+  Overview,
+  Pots,
+  RecurringBills,
+  Transactions,
+} from "./ui/icons";
+import { useState } from "react";
 
 const Sidebar = () => {
-  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
+  const toggleSidebar = () => setIsOpen((prev) => !prev);
   const menuItems = [
     {
       icon: <Overview width="20" />,
       title: "Overview",
-      link: "/dashboard",
+      link: "/",
     },
     {
       icon: <Transactions width="20" />,
@@ -31,41 +40,65 @@ const Sidebar = () => {
       link: "/recurring_bills",
     },
   ];
-  const navigateToHref = (link: string) => {
-    navigate(link);
-  };
 
   return (
     <div
-      className="hidden lg:block relative w-full max-w-[300px] bg-white-500  h-full border-r-[1px] border-primary border-opacity-30 shadow-sm"
-      style={{ backgroundColor: "white" }}
+      id="sidebar"
+      className={`hidden h-screen w-full flex-col gap-6 rounded-r-lg bg-grey-900 text-gray-300 lg:flex ease-in-out duration-700 ${
+        isOpen ? "max-w-[300px]" : "max-w-[80px]"
+      }`}
+      style={{ backgroundColor: "var(--clr-neutral-800)" }}
     >
-      {/* <img src="/sigi.png" alt="LOGO" className="w-[130px]" /> */}
-      <div className="flex gap-3 justify-center items-center h-[65px] ">
-        <p className="font-bold ">finance</p>
+      <div className="flex h-[101px] items-center justify-start pl-8 py-10 mr-9 truncate">
+        <span className={`w-[122px]`}>
+          <Logo />
+        </span>
       </div>
-      <ul className="w-full px-5 py-9">
-        {menuItems.map((data, index) => {
-          return (
-            <li className="mb-4 flex justify-center" key={index}>
-              <button
-                type="button"
-                onClick={() => navigateToHref(data.link)}
-                className={` w-full flex justify-start items-center px-6 py-2 rounded-[7px] hover:shadow-sm text-sub_text ${
-                  window.location.pathname == data.link
-                    ? "bg-primary text-white shadow-sm fill-white"
-                    : "hover:bg-primary hover:bg-opacity-10 fill-border_color"
-                } `}
-              >
-                {data.icon}
-                <span className="ml-4 text-[14px] font-semibold tracking-wider ">
-                  {data.title}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <nav className="w-full flex-grow">
+        <ul className="flex flex-col gap-1 pr-6">
+          {menuItems.map((data, index) => {
+            return (
+              <li key={index}>
+                <NavLink
+                  to={data.link}
+                  className="w-full flex items-center gap-4 px-8 py-4 rounded-r-lg hover:text-white ease-in-out duration-700"
+                  style={({ isActive }) => {
+                    return {
+                      backgroundColor: isActive
+                        ? `${isOpen ? "white" : ""}`
+                        : "",
+                      color: isActive ? "var(--clr-accent-700)" : "",
+                      borderLeft: isActive
+                        ? "4px solid var(--clr-accent-700)"
+                        : "",
+                    };
+                  }}
+                >
+                  <span className="w-[20px]">{data.icon}</span>
+                  <span className="truncate font-bold">{data.title}</span>
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+      <button
+        className="flex items-center gap-4 px-8 mr-4 py-4 mb-6 mt-auto hover:text-white truncate"
+        onClick={toggleSidebar}
+      >
+        <span
+          className={`${isOpen ? "" : "rotate-180"} ease-in-out duration-700`}
+        >
+          <MinimizeMenu />
+        </span>
+        <span
+          className={`${
+            isOpen ? "opacity-1" : "opacity-0"
+          } delay-700 duration-500`}
+        >
+          Minimize Menu
+        </span>
+      </button>
     </div>
   );
 };
